@@ -16,7 +16,7 @@ from ytmusicapi.navigation import (
     TITLE_TEXT,
     nav,
 )
-from ytmusicapi import setup
+from ytmusicapi import YTMusic
 
 from mopidy_ytmusic import logger
 
@@ -58,13 +58,15 @@ class YTMusicBackend(
         self.verify_track_url = config["ytmusic"]["verify_track_url"]
 
         if config["ytmusic"]["auth_json"]:
-            self._ytmusicapi_auth_json = config["ytmusic"]["auth_json"]
+            logger.info('Using %s to log into YouTube', config["ytmusic"]["auth_json"])
+            self.api = YTMusic(auth=config["ytmusic"]["auth_json"])
             self.auth = True
-
-        if self.auth:
-            self.api = setup(self._ytmusicapi_auth_json)
+        elif config["ytmusic"]["oauth_json"]:
+            logger.info('Using %s to log into YouTube', config["ytmusic"]["oauth_json"])
+            self.api = YTMusic(auth=config["ytmusic"]["oauth_json"])
+            self.auth = True
         else:
-            self.api = setup()
+            self.api = YTMusic()
 
         self.playback = YTMusicPlaybackProvider(audio=audio, backend=self)
         self.library = YTMusicLibraryProvider(backend=self)
