@@ -1082,7 +1082,7 @@ class YTMusicLibraryProvider(backend.LibraryProvider):
                     logger.exception(
                         "YTMusic failed parsing album %s", result["title"]
                     )
-            elif result["resultType"] == "artist":
+            elif result["resultType"] == "artist" and "browseId" in result:
                 if field == "artist" and not any(
                     q.casefold() == result["artist"].casefold() for q in queries
                 ):
